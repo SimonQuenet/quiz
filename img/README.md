@@ -1,21 +1,22 @@
 # Images des personnages
 
-Dépose ici **7 fichiers PNG**, un par personnage, avec ces noms EXACTS
+Dépose ici **7 fichiers JPG**, un par personnage, avec ces noms EXACTS
 (en minuscules, sans accent) :
 
 | Personnage | Fichier attendu     |
 |------------|---------------------|
-| Sangoku    | `goku.png`          |
-| Végéta     | `vegeta.png`        |
-| Sangohan   | `gohan.png`         |
-| Piccolo    | `piccolo.png`       |
-| Bulma      | `bulma.png`         |
-| Krilin     | `krillin.png`       |
-| Freezer    | `freezer.png`       |
+| Sangoku    | `goku.jpg`          |
+| Végéta     | `vegeta.jpg`        |
+| Sangohan   | `gohan.jpg`         |
+| Piccolo    | `piccolo.jpg`       |
+| Bulma      | `bulma.jpg`         |
+| Krilin     | `krillin.jpg`       |
+| Freezer    | `freezer.jpg`       |
 
 ## Recommandations
 
-- **Format** : PNG (idéalement fond transparent).
+- **Format** : JPG. (Pas de transparence : l'image remplit entièrement le cercle,
+  pense donc à une photo/illustration au cadrage propre autour du visage.)
 - **Forme** : image **carrée** (ex. 800×800). Elle est recadrée en cercle, en mode
   « cover » (centrée, remplit le cercle) — garde donc le visage bien centré.
 - **Résolution** : au moins 600×600 px (la carte partagée fait 1080×1920, le portrait
@@ -33,7 +34,7 @@ Dépose ici **7 fichiers PNG**, un par personnage, avec ces noms EXACTS
 Une fois les fichiers déposés ici :
 
 ```bash
-git add img/*.png
+git add img/*.jpg
 git commit -m "Ajoute les portraits des personnages"
 git push
 ```
