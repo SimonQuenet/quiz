@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Quel personnage de Dragon Ball es-tu ? 🐉</title>
+<meta name="description" content="Réponds à 8 questions et découvre quel guerrier de Dragon Ball sommeille en toi. Partage ton résultat !" />
+
+<!-- Aperçu social (Open Graph) -->
+<meta property="og:title" content="Quel personnage de Dragon Ball es-tu ? 🐉" />
+<meta property="og:description" content="Fais le test et découvre ton guerrier intérieur !" />
+<meta property="og:type" content="website" />
+
+<!-- ===== Snapchat Creative Kit Web SDK ===== -->
+<script src="https://sdk.snapkit.com/js/v1/create.js"></script>
+
+<style>
+  :root{
+    --bg1:#0b1026; --bg2:#161a3a;
+    --orange:#ff8a00; --red:#e52e00;
+    --gold:#ffd34d; --ink:#0b1026;
+    --snap:#fffc00;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;
+    color:#fff;
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #2a2f66 0%, transparent 60%),
+      radial-gradient(900px 500px at 80% 110%, #5a1f00 0%, transparent 55%),
+      linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100dvh;
+    display:flex;align-items:center;justify-content:center;
+    padding:18px;
+    overflow-x:hidden;
+  }
+  /* petites étoiles décoratives */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;
+    background-image:
+      radial-gradient(2px 2px at 20% 30%, #fff, transparent),
+      radial-gradient(2px 2px at 70% 20%, #ffe7a8, transparent),
+      radial-gradient(1.5px 1.5px at 40% 80%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 85% 65%, #fff, transparent),
+      radial-gradient(2px 2px at 10% 70%, #ffd34d, transparent);
+  }
+  .app{width:100%;max-width:480px;position:relative;z-index:1}
+  .card{
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:26px;
+    padding:26px 22px 30px;
+    backdrop-filter:blur(8px);
+    box-shadow:0 30px 80px rgba(0,0,0,.45);
+  }
+  .kicker{
+    text-align:center;letter-spacing:3px;font-size:12px;font-weight:bold;
+    color:var(--gold);text-transform:uppercase;margin-bottom:8px;
+  }
+  h1{
+    text-align:center;font-size:30px;line-height:1.15;margin-bottom:6px;
+    background:linear-gradient(90deg,var(--gold),var(--orange),var(--red));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 2px 0 rgba(0,0,0,.15);
+  }
+  .sub{text-align:center;color:#c9cdf0;font-size:14px;margin-bottom:22px}
+
+  .ball{
+    width:96px;height:96px;border-radius:50%;margin:6px auto 18px;
+    background:radial-gradient(circle at 35% 30%, #ffdf7a, var(--orange) 55%, var(--red));
+    box-shadow:0 0 40px rgba(255,138,0,.55), inset -8px -10px 20px rgba(0,0,0,.25);
+    display:flex;align-items:center;justify-content:center;position:relative;
+    animation:float 3.5s ease-in-out infinite;
+  }
+  .ball .stars{font-size:34px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+
+  .btn{
+    display:block;width:100%;border:0;cursor:pointer;
+    font-family:inherit;font-weight:bold;font-size:16px;color:#fff;
+    padding:16px 18px;border-radius:16px;margin-top:12px;
+    background:linear-gradient(90deg,var(--orange),var(--red));
+    box-shadow:0 10px 24px rgba(229,46,0,.35);
+    transition:transform .12s ease, box-shadow .12s ease, opacity .12s;
+    text-align:center;
+  }
+  .btn:active{transform:translateY(2px) scale(.99)}
+  .btn.ghost{
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.18);
+    box-shadow:none;
+  }
+  .btn.snap{background:var(--snap);color:#111;box-shadow:0 10px 24px rgba(255,252,0,.25)}
+
+  /* écran question */
+  .progress{height:10px;border-radius:999px;background:rgba(255,255,255,.12);overflow:hidden;margin-bottom:16px}
+  .progress > i{display:block;height:100%;width:0;border-radius:999px;
+    background:linear-gradient(90deg,var(--gold),var(--orange));transition:width .35s ease}
+  .qcount{text-align:center;font-size:12px;color:#aeb3e0;margin-bottom:10px;letter-spacing:1px}
+  .question{font-size:21px;font-weight:bold;text-align:center;margin-bottom:18px;line-height:1.3}
+  .opt{
+    width:100%;text-align:left;cursor:pointer;font-family:inherit;
+    color:#fff;font-size:15px;line-height:1.35;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.14);
+    border-radius:14px;padding:14px 16px;margin-bottom:11px;
+    transition:transform .1s, background .15s, border-color .15s;
+  }
+  .opt:hover{background:rgba(255,255,255,.12);border-color:rgba(255,211,77,.6)}
+  .opt:active{transform:scale(.985)}
+
+  /* écran résultat */
+  .result-wrap{text-align:center}
+  .preview{
+    width:100%;max-width:300px;margin:4px auto 18px;display:block;
+    border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.5);
+  }
+  .result-name{font-size:30px;font-weight:bold;margin-bottom:2px}
+  .result-tag{color:var(--gold);font-weight:bold;margin-bottom:12px}
+  .result-desc{color:#d6d9f5;font-size:15px;line-height:1.5;margin-bottom:8px}
+  .hidden{display:none !important}
+  .hint{font-size:12px;color:#9aa0cf;margin-top:14px;line-height:1.5}
+  #snap-mount{margin-top:12px;display:flex;justify-content:center}
+  footer{text-align:center;color:#8a90c0;font-size:11px;margin-top:18px}
+  canvas{display:none}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ====== ÉCRAN ACCUEIL ====== -->
+  <section id="screen-start" class="card">
+    <div class="kicker">Quiz viral</div>
+    <div class="ball"><span class="stars">⭐⭐⭐⭐</span></div>
+    <h1>Quel personnage de<br>Dragon Ball es-tu ?</h1>
+    <p class="sub">8 questions • 1 résultat à partager 🐉🔥</p>
+    <button class="btn" id="btn-start">Commencer le test 💥</button>
+  </section>
+
+  <!-- ====== ÉCRAN QUESTIONS ====== -->
+  <section id="screen-quiz" class="card hidden">
+    <div class="progress"><i id="bar"></i></div>
+    <div class="qcount" id="qcount"></div>
+    <div class="question" id="question"></div>
+    <div id="options"></div>
+  </section>
+
+  <!-- ====== ÉCRAN RÉSULTAT ====== -->
+  <section id="screen-result" class="card hidden">
+    <div class="result-wrap">
+      <div class="kicker">Ton résultat</div>
+      <img id="preview" class="preview" alt="Ta carte-résultat Dragon Ball" />
+      <div class="result-name" id="r-name"></div>
+      <div class="result-tag" id="r-tag"></div>
+      <div class="result-desc" id="r-desc"></div>
+
+      <button class="btn" id="btn-share">📲 Partager ma carte</button>
+      <button class="btn snap" id="btn-snap">👻 Partager sur Snapchat</button>
+      <!-- bouton officiel Creative Kit Web monté ici si dispo -->
+      <div id="snap-mount"></div>
+      <button class="btn ghost" id="btn-restart">↻ Refaire le test</button>
+
+      <p class="hint">
+        Astuce : le <b>partage natif</b> envoie directement l'image (Snapchat, Insta, WhatsApp…)
+        sur mobile. Le bouton Snapchat utilise le <b>Creative Kit Web</b> (nécessite un Client ID).
+      </p>
+    </div>
+  </section>
+
+  <footer>Fan-quiz non officiel • Dragon Ball © Bird Studio / Shueisha / Toei</footer>
+</div>
+
+<!-- canvas caché qui génère l'image partageable -->
+<canvas id="cardCanvas" width="1080" height="1920"></canvas>
+
+<script>
+/* =========================================================================
+   ⚙️  CONFIG — à personnaliser
+   ========================================================================= */
+// URL publique de ta page une fois déployée (sert au partage + au lien viral)
+const SHARE_URL = location.href.split('#')[0] || 'https://simonquenet.github.io/quiz/';
+// Client ID Snapchat (créer une app sur https://devportal.snap.com → Creative Kit
+// → renseigner ton domaine dans la liste blanche). Sans lui, on bascule sur un fallback.
+const SNAP_CLIENT_ID = 'METTEZ_VOTRE_CLIENT_ID_SNAP';
+
+/* =========================================================================
+   🐉  DONNÉES — personnages & questions
+   ========================================================================= */
+const CHARACTERS = {
+  goku:    {name:"Sangoku",  emoji:"🥋", c1:"#ff8a00", c2:"#e52e00", glow:"#ffd27a",
+            tag:"Le Saiyan au cœur pur",
+            desc:"Cœur pur, appétit sans fin et soif de dépassement. Tu vis pour les défis et tu tires le meilleur des autres."},
+  vegeta:  {name:"Végéta",   emoji:"👑", c1:"#3d8bff", c2:"#0a2a5e", glow:"#9cc6ff",
+            tag:"Le prince des Saiyans",
+            desc:"Fier, intense et incroyablement déterminé. Derrière l'orgueil se cache une loyauté sans faille."},
+  gohan:   {name:"Sangohan", emoji:"🎓", c1:"#8a5bff", c2:"#2e1a66", glow:"#cdb6ff",
+            tag:"La puissance tranquille",
+            desc:"Doux mais d'une puissance insoupçonnée. Tu protèges ceux que tu aimes et tu brilles quand ça compte vraiment."},
+  piccolo: {name:"Piccolo",  emoji:"🧘", c1:"#2fcf7a", c2:"#0f5c33", glow:"#aef0cb",
+            tag:"Le mentor Namek",
+            desc:"Stratège, sage et solitaire. Tu observes, tu réfléchis, puis tu frappes au moment parfait."},
+  bulma:   {name:"Bulma",    emoji:"🔧", c1:"#00bcd4", c2:"#c4187e", glow:"#a9f0ff",
+            tag:"Le génie de l'équipe",
+            desc:"Géniale, débrouillarde et au caractère bien trempé. Sans toi, l'équipe serait totalement perdue."},
+  krillin: {name:"Krilin",   emoji:"✊", c1:"#ffb300", c2:"#ef6c00", glow:"#ffe39a",
+            tag:"Le cœur courageux",
+            desc:"Courageux, fidèle et plus fort qu'il n'y paraît. Le meilleur ami dont on puisse rêver."},
+  freezer: {name:"Freezer",  emoji:"❄️", c1:"#b14cff", c2:"#241158", glow:"#e0c2ff",
+            tag:"L'empereur du cosmos",
+            desc:"Ambitieux, charismatique et redoutable. Tu vises le sommet… quoi qu'il en coûte."},
+};
+
+const QUESTIONS = [
+  {q:"C'est le week-end. Ton plan idéal ?", a:[
+    {t:"M'entraîner à fond pour devenir plus fort 💪", s:{goku:2,vegeta:1}},
+    {t:"Bricoler / inventer un nouveau gadget 🔧", s:{bulma:2,gohan:1}},
+    {t:"Apprendre un truc nouveau, réviser 📖", s:{gohan:2,piccolo:1}},
+    {t:"Conquérir le monde (ou au moins le quartier) 😈", s:{freezer:2,vegeta:1}},
+  ]},
+  {q:"Un adversaire bien plus fort se dresse devant toi…", a:[
+    {t:"Je souris : enfin un vrai défi ! 🔥", s:{goku:2,vegeta:1}},
+    {t:"J'analyse ses faiblesses avant d'agir 🧠", s:{piccolo:2,gohan:1}},
+    {t:"Je refuse de perdre, ma fierté est en jeu 👑", s:{vegeta:2,freezer:1}},
+    {t:"Je cherche un plan B malin 😅", s:{krillin:2,bulma:1}},
+  ]},
+  {q:"Tes amis te décrivent surtout comme…", a:[
+    {t:"Loyal et toujours prêt à aider 🤝", s:{krillin:2,goku:1}},
+    {t:"Déterminé, je ne lâche jamais 💢", s:{vegeta:2,goku:1}},
+    {t:"Calme, sage, de bon conseil 🧘", s:{piccolo:2,gohan:1}},
+    {t:"Malin et plein de ressources 💡", s:{bulma:2,gohan:1}},
+  ]},
+  {q:"Un ami est en danger. Ta réaction ?", a:[
+    {t:"Je fonce, sans réfléchir ! 🏃", s:{goku:2,krillin:1}},
+    {t:"Je le protège même si ça me dépasse 🛡️", s:{gohan:2,piccolo:1}},
+    {t:"Je trouve une solution astucieuse 🛠️", s:{bulma:2,krillin:1}},
+    {t:"Chacun pour soi… enfin, ça dépend 😏", s:{freezer:2,vegeta:1}},
+  ]},
+  {q:"Ton plus grand rêve ?", a:[
+    {t:"Devenir le plus fort de l'univers 🌌", s:{goku:2,vegeta:2}},
+    {t:"Être enfin reconnu à ma juste valeur 🏆", s:{vegeta:2,gohan:1}},
+    {t:"Vivre en paix avec mes proches ☮️", s:{krillin:2,piccolo:1}},
+    {t:"Régner sans partage 👑❄️", s:{freezer:2}},
+  ]},
+  {q:"Ton style face à un combat (ou un conflit) ?", a:[
+    {t:"Direct et explosif — KAMEHAMEHA 💥", s:{goku:2,krillin:1}},
+    {t:"Puissant et sans pitié ⚡", s:{freezer:2,vegeta:1}},
+    {t:"Patient, technique, stratégique ♟️", s:{piccolo:2,gohan:1}},
+    {t:"J'évite si je peux, je négocie 🤐", s:{bulma:2,krillin:1}},
+  ]},
+  {q:"Qu'est-ce qui t'agace le plus ?", a:[
+    {t:"L'injustice 😤", s:{gohan:2,goku:1}},
+    {t:"Qu'on me sous-estime 😠", s:{vegeta:2,krillin:1}},
+    {t:"Le désordre et l'imprévu 🌀", s:{bulma:2,piccolo:1}},
+    {t:"Qu'on ose me résister 😈", s:{freezer:2}},
+  ]},
+  {q:"À table, tu es plutôt…", a:[
+    {t:"Je dévore tout, encore et encore ! 🍜", s:{goku:2,krillin:1}},
+    {t:"Repas équilibré, faut rester au top 🥗", s:{gohan:2,vegeta:1}},
+    {t:"Je teste des recettes originales 🧪", s:{bulma:2}},
+    {t:"La nourriture ? Détail négligeable 🍷", s:{freezer:2,piccolo:1}},
+  ]},
+];
+
+// Ordre de priorité en cas d'égalité (héros d'abord)
+const PRIORITY = ["goku","vegeta","gohan","piccolo","bulma","krillin","freezer"];
+
+/* =========================================================================
+   🎮  LOGIQUE DU QUIZ
+   ========================================================================= */
+const $ = (id)=>document.getElementById(id);
+let current = 0;
+let scores = {};
+let resultKey = null;
+let resultFile = null;   // File PNG prêt pour navigator.share
+
+function resetScores(){ scores = {}; for(const k in CHARACTERS) scores[k]=0; }
+
+function show(screen){
+  ["screen-start","screen-quiz","screen-result"].forEach(s=>$(s).classList.add("hidden"));
+  $(screen).classList.remove("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function startQuiz(){
+  resetScores(); current = 0;
+  show("screen-quiz");
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const item = QUESTIONS[current];
+  $("bar").style.width = ((current)/QUESTIONS.length*100) + "%";
+  $("qcount").textContent = `Question ${current+1} / ${QUESTIONS.length}`;
+  $("question").textContent = item.q;
+  const box = $("options");
+  box.innerHTML = "";
+  item.a.forEach(opt=>{
+    const b = document.createElement("button");
+    b.className = "opt";
+    b.textContent = opt.t;
+    b.onclick = ()=>choose(opt);
+    box.appendChild(b);
+  });
+}
+
+function choose(opt){
+  for(const k in opt.s) scores[k] += opt.s[k];
+  current++;
+  if(current < QUESTIONS.length){
+    renderQuestion();
+  } else {
+    $("bar").style.width = "100%";
+    computeResult();
+  }
+}
+
+function computeResult(){
+  let best = PRIORITY[0], max = -1;
+  for(const k of PRIORITY){
+    if(scores[k] > max){ max = scores[k]; best = k; }
+  }
+  resultKey = best;
+  const c = CHARACTERS[best];
+
+  // texte écran
+  $("r-name").textContent = c.name;
+  $("r-tag").textContent = c.tag;
+  $("r-desc").textContent = c.desc;
+
+  // niveau de puissance fun
+  const total = PRIORITY.reduce((a,k)=>a+scores[k],0);
+  const power = 9000 + max*1500 + total*180;
+
+  drawCard(c, power);   // remplit le canvas + l'aperçu + prépare le fichier à partager
+  show("screen-result");
+  mountSnapButton();
+}
+
+/* =========================================================================
+   🎨  GÉNÉRATION DE LA CARTE-RÉSULTAT (image partageable, format story 9:16)
+   ========================================================================= */
+function drawCard(c, power){
+  const cv = $("cardCanvas");
+  const ctx = cv.getContext("2d");
+  const W = cv.width, H = cv.height, cx = W/2;
+
+  // fond dégradé
+  const g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0, c.c1); g.addColorStop(1, c.c2);
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H);
+
+  // halo lumineux
+  const rg = ctx.createRadialGradient(cx,640,40, cx,640,720);
+  rg.addColorStop(0, hexA(c.glow,.55)); rg.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = rg; ctx.fillRect(0,0,W,H);
+
+  // étoiles / texture légère
+  ctx.fillStyle = "rgba(255,255,255,.10)";
+  const dots = [[120,260],[940,200],[230,1500],[880,1620],[520,160],[980,980],[90,900]];
+  dots.forEach(([x,y],i)=>{ ctx.beginPath(); ctx.arc(x,y,(i%3)+3,0,7); ctx.fill(); });
+
+  ctx.textAlign = "center";
+
+  // bandeau titre
+  ctx.fillStyle = "rgba(255,255,255,.9)";
+  ctx.font = "bold 40px 'Trebuchet MS', sans-serif";
+  ctx.fillText("QUEL PERSONNAGE DRAGON BALL ES-TU ?", cx, 170);
+
+  // cercle emoji
+  ctx.beginPath(); ctx.arc(cx, 600, 230, 0, Math.PI*2);
+  ctx.fillStyle = "rgba(255,255,255,.14)";
+  ctx.fill();
+  ctx.lineWidth = 10; ctx.strokeStyle = hexA("#ffffff",.7); ctx.stroke();
+  ctx.font = "270px 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif";
+  ctx.textBaseline = "middle";
+  ctx.fillText(c.emoji, cx, 615);
+  ctx.textBaseline = "alphabetic";
+
+  // "TU ES"
+  ctx.fillStyle = hexA("#ffffff",.85);
+  ctx.font = "bold 44px 'Trebuchet MS', sans-serif";
+  ctx.fillText("TU ES…", cx, 980);
+
+  // nom
+  ctx.fillStyle = "#fff";
+  ctx.font = "bold 150px 'Trebuchet MS', sans-serif";
+  ctx.shadowColor = "rgba(0,0,0,.35)"; ctx.shadowBlur = 18; ctx.shadowOffsetY = 6;
+  ctx.fillText(c.name.toUpperCase(), cx, 1140);
+  ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+
+  // tagline
+  ctx.fillStyle = "#ffe9a8";
+  ctx.font = "italic bold 50px 'Trebuchet MS', sans-serif";
+  ctx.fillText(c.tag, cx, 1220);
+
+  // description (multi-lignes)
+  ctx.fillStyle = "rgba(255,255,255,.95)";
+  ctx.font = "42px 'Trebuchet MS', sans-serif";
+  wrapText(ctx, c.desc, cx, 1320, 880, 56);
+
+  // badge niveau de puissance
+  const badgeY = 1640;
+  roundRect(ctx, cx-330, badgeY-60, 660, 110, 55);
+  ctx.fillStyle = "rgba(0,0,0,.30)"; ctx.fill();
+  ctx.fillStyle = "#fff";
+  ctx.font = "bold 52px 'Trebuchet MS', sans-serif";
+  ctx.fillText("⚡ NIVEAU : " + power.toLocaleString("fr-FR"), cx, badgeY+8);
+
+  // footer / call to action
+  ctx.fillStyle = "rgba(255,255,255,.92)";
+  ctx.font = "bold 40px 'Trebuchet MS', sans-serif";
+  ctx.fillText("Et toi ? 👉 Fais le test  •  #DragonBallQuiz", cx, 1830);
+
+  // aperçu + fichier partageable
+  $("preview").src = cv.toDataURL("image/png");
+  cv.toBlob(blob=>{
+    if(blob) resultFile = new File([blob], "mon-perso-dragonball.png", {type:"image/png"});
+  }, "image/png");
+}
+
+function wrapText(ctx, text, x, y, maxW, lh){
+  const words = text.split(" ");
+  let line = "", yy = y;
+  for(const w of words){
+    const test = line ? line+" "+w : w;
+    if(ctx.measureText(test).width > maxW && line){
+      ctx.fillText(line, x, yy); line = w; yy += lh;
+    } else line = test;
+  }
+  ctx.fillText(line, x, yy);
+}
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+function hexA(hex,a){
+  const h = hex.replace("#",""); const n = h.length===3
+    ? h.split("").map(c=>c+c).join("") : h;
+  const r=parseInt(n.slice(0,2),16),g=parseInt(n.slice(2,4),16),b=parseInt(n.slice(4,6),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+/* =========================================================================
+   📲  PARTAGE NATIF (navigator.share, avec l'image en pièce jointe)
+   ========================================================================= */
+function shareText(){
+  const c = CHARACTERS[resultKey];
+  return `Je suis ${c.name} ! ${c.tag} 🐉🔥 Et toi, quel personnage de Dragon Ball es-tu ?`;
+}
+
+async function shareNative(){
+  const data = { title:"Quiz Dragon Ball 🐉", text: shareText() + " " + SHARE_URL };
+  // Web Share Level 2 : on partage directement le fichier image si possible
+  if(resultFile && navigator.canShare && navigator.canShare({files:[resultFile]})){
+    data.files = [resultFile];
+    delete data.text; // certaines apps n'aiment pas texte + fichier ; on garde l'image
+    data.text = shareText();
+  } else {
+    data.url = SHARE_URL;
+  }
+  if(navigator.share){
+    try{ await navigator.share(data); }catch(e){ /* annulé par l'utilisateur */ }
+  } else {
+    // Fallback desktop : on télécharge l'image + copie le lien
+    if(resultFile){
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(resultFile);
+      a.download = resultFile.name; a.click();
+      URL.revokeObjectURL(a.href);
+    }
+    try{ await navigator.clipboard.writeText(SHARE_URL); }catch(e){}
+    alert("Partage natif indisponible sur ce navigateur.\nImage téléchargée et lien copié ✅");
+  }
+}
+
+/* =========================================================================
+   👻  PARTAGE SNAPCHAT (Creative Kit Web)
+   ========================================================================= */
+let snapSdkReady = false;
+// Appelé automatiquement par le SDK une fois chargé
+window.snapKitInit = function(){ snapSdkReady = true; };
+
+function mountSnapButton(){
+  const host = $("snap-mount");
+  host.innerHTML = "";
+  const configured = SNAP_CLIENT_ID && !SNAP_CLIENT_ID.startsWith("METTEZ_");
+  if(snapSdkReady && window.snap && window.snap.creativekit && configured){
+    try{
+      const el = document.createElement("div");
+      // Le lien partagé en pièce jointe : le quiz lui-même (boucle virale).
+      // NB : pour coller la carte-image en "sticker", il faut une URL https HÉBERGÉE
+      // (le Creative Kit Web n'accepte pas les data:URL). Héberge l'image puis ajoute
+      // el.setAttribute("data-sticker-url", "https://.../carte.png");
+      el.setAttribute("data-share-url", SHARE_URL);
+      host.appendChild(el);
+      window.snap.creativekit.createShareButton(SNAP_CLIENT_ID, el);
+      $("btn-snap").classList.add("hidden"); // on masque le bouton de secours
+      return;
+    }catch(e){ /* on retombe sur le fallback ci-dessous */ }
+  }
+  $("btn-snap").classList.remove("hidden");
+}
+
+// Bouton Snapchat de secours (si Creative Kit Web non configuré) :
+// ouvre la feuille de partage native -> l'utilisateur choisit Snapchat.
+async function snapFallback(){
+  if(resultFile && navigator.canShare && navigator.canShare({files:[resultFile]})){
+    try{ await navigator.share({files:[resultFile], text:shareText()}); return; }catch(e){}
+  }
+  // sinon : Snapchat Web Creative Kit "share" via URL
+  const u = "https://www.snapchat.com/scan?attachmentUrl=" + encodeURIComponent(SHARE_URL);
+  window.open(u, "_blank", "noopener");
+}
+
+/* =========================================================================
+   🔌  ÉVÉNEMENTS
+   ========================================================================= */
+$("btn-start").onclick   = startQuiz;
+$("btn-restart").onclick = ()=>show("screen-start");
+$("btn-share").onclick   = shareNative;
+$("btn-snap").onclick    = snapFallback;
+</script>
+</body>
+</html>
