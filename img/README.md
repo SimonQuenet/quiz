@@ -1,40 +1,39 @@
 # Images des personnages
 
-Dépose ici **7 fichiers JPG**, un par personnage, avec ces noms EXACTS
-(en minuscules, sans accent) :
+Le quiz cherche ici **7 portraits PNG** (transparence préservée), un par personnage :
 
-| Personnage | Fichier attendu     |
-|------------|---------------------|
-| Sangoku    | `goku.jpg`          |
-| Végéta     | `vegeta.jpg`        |
-| Sangohan   | `gohan.jpg`         |
-| Piccolo    | `piccolo.jpg`       |
-| Bulma      | `bulma.jpg`         |
-| Krilin     | `krillin.jpg`       |
-| Freezer    | `freezer.jpg`       |
+| Personnage | Fichier         |
+|------------|-----------------|
+| Sangoku    | `goku.png`      |
+| Végéta     | `vegeta.png`    |
+| Sangohan   | `gohan.png`     |
+| Piccolo    | `piccolo.png`   |
+| Bulma      | `bulma.png`     |
+| Krilin     | `krillin.png`   |
+| Freezer    | `freezer.png`   |
 
-## Recommandations
+## D'où viennent-elles ?
 
-- **Format** : JPG. (Pas de transparence : l'image remplit entièrement le cercle,
-  pense donc à une photo/illustration au cadrage propre autour du visage.)
-- **Forme** : image **carrée** (ex. 800×800). Elle est recadrée en cercle, en mode
-  « cover » (centrée, remplit le cercle) — garde donc le visage bien centré.
-- **Résolution** : au moins 600×600 px (la carte partagée fait 1080×1920, le portrait
-  y occupe ~460 px). Plus grand = plus net.
-- **Poids** : compresse si possible (< 300 Ko / image) pour un chargement rapide.
+Elles ont été récupérées depuis l'API publique pour développeurs
+**[dragonball-api.com](https://dragonball-api.com)**, puis converties en PNG et
+redimensionnées (plus grande dimension ≤ 1200 px).
 
-## Important
+> ⚠️ Ces images restent des œuvres sous droit d'auteur (Bird Studio / Shueisha / Toei).
+> Elles sont gardées **en local** et **exclues du dépôt** (voir `.gitignore`) : elles
+> ne sont donc pas publiées sur GitHub. Le quiz fonctionne sans elles (repli sur l'emoji
+> du personnage). Pour un usage public, utilise des visuels dont tu as les droits.
 
-- Les images sont chargées depuis **le même domaine** que la page (GitHub Pages),
-  ce qui permet d'exporter la carte en PNG et de la partager. N'utilise pas d'URL
-  externe : cela « tainterait » le canvas et casserait le partage.
-- Tant qu'un fichier est absent, le quiz fonctionne et affiche l'**emoji** du
-  personnage à la place. Ajoute les images quand tu veux, puis pousse-les.
+## Comment elles s'affichent
 
-Une fois les fichiers déposés ici :
+- Chargées depuis **le même domaine** que la page → l'export PNG de la carte reste valide.
+- Recadrées dans un cercle avec un **cadrage haut** (tête + buste).
+- Forme idéale : image au moins ~600 px de large, personnage centré horizontalement.
+
+## Re-télécharger les portraits
 
 ```bash
-git add img/*.jpg
-git commit -m "Ajoute les portraits des personnages"
-git push
+# exemple pour un personnage
+curl -L "https://dragonball-api.com/characters/goku_normal.webp" -o /tmp/goku.webp
+python3 -c "from PIL import Image; Image.open('/tmp/goku.webp').convert('RGBA').save('img/goku.png')"
 ```
+(Liste complète des URLs : `GET https://dragonball-api.com/api/characters?limit=100`.)

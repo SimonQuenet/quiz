@@ -26,3 +26,11 @@ coverage/
 .vscode/
 .idea/
 *.swp
+
+# Portraits de personnages récupérés en local (droits d'auteur) — non publiés.
+# Le quiz retombe automatiquement sur les emojis si ces fichiers sont absents.
+/img/*.png
+/img/*.jpg
+/img/*.jpeg
+/img/*.webp
+
