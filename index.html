@@ -67,13 +67,10 @@
   .sub{text-align:center;color:#c9cdf0;font-size:14px;margin-bottom:22px}
 
   .ball{
-    width:96px;height:96px;border-radius:50%;margin:6px auto 18px;
-    background:radial-gradient(circle at 35% 30%, #ffdf7a, var(--orange) 55%, var(--red));
-    box-shadow:0 0 40px rgba(255,138,0,.55), inset -8px -10px 20px rgba(0,0,0,.25);
-    display:flex;align-items:center;justify-content:center;position:relative;
+    width:112px;height:112px;margin:6px auto 18px;display:block;
+    filter:drop-shadow(0 6px 18px rgba(0,0,0,.35)) drop-shadow(0 0 28px rgba(255,138,0,.5));
     animation:float 3.5s ease-in-out infinite;
   }
-  .ball .stars{font-size:34px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
   @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 
   .btn{
@@ -132,7 +129,28 @@
   <!-- ====== ÉCRAN ACCUEIL ====== -->
   <section id="screen-start" class="card">
     <div class="kicker">Quiz viral</div>
-    <div class="ball"><span class="stars">⭐⭐⭐⭐</span></div>
+    <svg class="ball" viewBox="0 0 200 200" role="img" aria-label="Dragon Ball à 4 étoiles">
+      <defs>
+        <radialGradient id="dbFill" cx="38%" cy="32%" r="78%">
+          <stop offset="0%" stop-color="#ffeec0"/>
+          <stop offset="45%" stop-color="#ff9d2e"/>
+          <stop offset="100%" stop-color="#dd540a"/>
+        </radialGradient>
+        <radialGradient id="dbGloss" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity=".9"/>
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+        </radialGradient>
+        <polygon id="dbStar"
+          points="0,-22 4.94,-6.8 20.92,-6.8 7.99,2.6 12.93,17.8 0,8.4 -12.93,17.8 -7.99,2.6 -20.92,-6.8 -4.94,-6.8"
+          fill="#cc1f1f" stroke="#9a1414" stroke-width="1"/>
+      </defs>
+      <circle cx="100" cy="100" r="93" fill="url(#dbFill)" stroke="rgba(150,40,0,.35)" stroke-width="2"/>
+      <ellipse cx="72" cy="62" rx="42" ry="27" fill="url(#dbGloss)"/>
+      <use href="#dbStar" x="66" y="66"/>
+      <use href="#dbStar" x="134" y="66"/>
+      <use href="#dbStar" x="66" y="134"/>
+      <use href="#dbStar" x="134" y="134"/>
+    </svg>
     <h1>Quel personnage de<br>Dragon Ball es-tu ?</h1>
     <p class="sub">8 questions • 1 résultat à partager 🐉🔥</p>
     <button class="btn" id="btn-start">Commencer le test 💥</button>
@@ -213,52 +231,52 @@ const CHARACTERS = {
 
 const QUESTIONS = [
   {q:"C'est le week-end. Ton plan idéal ?", a:[
-    {t:"M'entraîner à fond pour devenir plus fort 💪", s:{goku:2,vegeta:1}},
-    {t:"Bricoler / inventer un nouveau gadget 🔧", s:{bulma:2,gohan:1}},
-    {t:"Apprendre un truc nouveau, réviser 📖", s:{gohan:2,piccolo:1}},
-    {t:"Conquérir le monde (ou au moins le quartier) 😈", s:{freezer:2,vegeta:1}},
+    {t:"M'entraîner pour progresser", s:{goku:2,vegeta:1}},
+    {t:"Bricoler ou inventer quelque chose", s:{bulma:2,gohan:1}},
+    {t:"Apprendre quelque chose de nouveau", s:{gohan:2,piccolo:1}},
+    {t:"Avoir le contrôle sur tout", s:{freezer:2,vegeta:1}},
   ]},
-  {q:"Un adversaire bien plus fort se dresse devant toi…", a:[
-    {t:"Je souris : enfin un vrai défi ! 🔥", s:{goku:2,vegeta:1}},
-    {t:"J'analyse ses faiblesses avant d'agir 🧠", s:{piccolo:2,gohan:1}},
-    {t:"Je refuse de perdre, ma fierté est en jeu 👑", s:{vegeta:2,freezer:1}},
-    {t:"Je cherche un plan B malin 😅", s:{krillin:2,bulma:1}},
+  {q:"Un adversaire plus fort se dresse devant toi.", a:[
+    {t:"Tant mieux, j'adore les défis", s:{goku:2,vegeta:1}},
+    {t:"J'observe avant d'agir", s:{piccolo:2,gohan:1}},
+    {t:"Hors de question de perdre", s:{vegeta:2,freezer:1}},
+    {t:"Je trouve un autre moyen", s:{krillin:2,bulma:1}},
   ]},
-  {q:"Tes amis te décrivent surtout comme…", a:[
-    {t:"Loyal et toujours prêt à aider 🤝", s:{krillin:2,goku:1}},
-    {t:"Déterminé, je ne lâche jamais 💢", s:{vegeta:2,goku:1}},
-    {t:"Calme, sage, de bon conseil 🧘", s:{piccolo:2,gohan:1}},
-    {t:"Malin et plein de ressources 💡", s:{bulma:2,gohan:1}},
+  {q:"Tes proches diraient que tu es…", a:[
+    {t:"Fidèle et toujours là pour aider", s:{krillin:2,goku:1}},
+    {t:"Tenace, tu n'abandonnes jamais", s:{vegeta:2,goku:1}},
+    {t:"Calme et de bon conseil", s:{piccolo:2,gohan:1}},
+    {t:"Astucieux et débrouillard", s:{bulma:2,gohan:1}},
   ]},
-  {q:"Un ami est en danger. Ta réaction ?", a:[
-    {t:"Je fonce, sans réfléchir ! 🏃", s:{goku:2,krillin:1}},
-    {t:"Je le protège même si ça me dépasse 🛡️", s:{gohan:2,piccolo:1}},
-    {t:"Je trouve une solution astucieuse 🛠️", s:{bulma:2,krillin:1}},
-    {t:"Chacun pour soi… enfin, ça dépend 😏", s:{freezer:2,vegeta:1}},
+  {q:"Un proche est en danger. Ta réaction ?", a:[
+    {t:"Je fonce l'aider", s:{goku:2,krillin:1}},
+    {t:"Je le protège quoi qu'il arrive", s:{gohan:2,piccolo:1}},
+    {t:"Je cherche la meilleure solution", s:{bulma:2,krillin:1}},
+    {t:"Je gère mes intérêts d'abord", s:{freezer:2,vegeta:1}},
   ]},
-  {q:"Ton plus grand rêve ?", a:[
-    {t:"Devenir le plus fort de l'univers 🌌", s:{goku:2,vegeta:2}},
-    {t:"Être enfin reconnu à ma juste valeur 🏆", s:{vegeta:2,gohan:1}},
-    {t:"Vivre en paix avec mes proches ☮️", s:{krillin:2,piccolo:1}},
-    {t:"Régner sans partage 👑❄️", s:{freezer:2}},
+  {q:"Ton plus grand objectif ?", a:[
+    {t:"Devenir le plus fort", s:{goku:2,vegeta:2}},
+    {t:"Être reconnu à ma juste valeur", s:{vegeta:2,gohan:1}},
+    {t:"Vivre tranquille avec les miens", s:{krillin:2,piccolo:1}},
+    {t:"Être au sommet", s:{freezer:2}},
   ]},
-  {q:"Ton style face à un combat (ou un conflit) ?", a:[
-    {t:"Direct et explosif — KAMEHAMEHA 💥", s:{goku:2,krillin:1}},
-    {t:"Puissant et sans pitié ⚡", s:{freezer:2,vegeta:1}},
-    {t:"Patient, technique, stratégique ♟️", s:{piccolo:2,gohan:1}},
-    {t:"J'évite si je peux, je négocie 🤐", s:{bulma:2,krillin:1}},
+  {q:"Ta façon de gérer un conflit ?", a:[
+    {t:"Directement, sans détour", s:{goku:2,krillin:1}},
+    {t:"Avec force et fermeté", s:{freezer:2,vegeta:1}},
+    {t:"Avec patience et stratégie", s:{piccolo:2,gohan:1}},
+    {t:"En évitant l'affrontement", s:{bulma:2,krillin:1}},
   ]},
-  {q:"Qu'est-ce qui t'agace le plus ?", a:[
-    {t:"L'injustice 😤", s:{gohan:2,goku:1}},
-    {t:"Qu'on me sous-estime 😠", s:{vegeta:2,krillin:1}},
-    {t:"Le désordre et l'imprévu 🌀", s:{bulma:2,piccolo:1}},
-    {t:"Qu'on ose me résister 😈", s:{freezer:2}},
+  {q:"Ce qui t'agace le plus ?", a:[
+    {t:"L'injustice", s:{gohan:2,goku:1}},
+    {t:"Qu'on me sous-estime", s:{vegeta:2,krillin:1}},
+    {t:"Le désordre", s:{bulma:2,piccolo:1}},
+    {t:"Qu'on me tienne tête", s:{freezer:2}},
   ]},
   {q:"À table, tu es plutôt…", a:[
-    {t:"Je dévore tout, encore et encore ! 🍜", s:{goku:2,krillin:1}},
-    {t:"Repas équilibré, faut rester au top 🥗", s:{gohan:2,vegeta:1}},
-    {t:"Je teste des recettes originales 🧪", s:{bulma:2}},
-    {t:"La nourriture ? Détail négligeable 🍷", s:{freezer:2,piccolo:1}},
+    {t:"Je mange beaucoup", s:{goku:2,krillin:1}},
+    {t:"Je fais attention à ce que je mange", s:{gohan:2,vegeta:1}},
+    {t:"J'aime tester des plats", s:{bulma:2}},
+    {t:"Manger n'est pas ma priorité", s:{freezer:2,piccolo:1}},
   ]},
 ];
 
