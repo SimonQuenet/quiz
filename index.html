@@ -206,28 +206,51 @@ const SNAP_CLIENT_ID = 'METTEZ_VOTRE_CLIENT_ID_SNAP';
    🐉  DONNÉES — personnages & questions
    ========================================================================= */
 const CHARACTERS = {
-  goku:    {name:"Sangoku",  emoji:"🥋", c1:"#ff8a00", c2:"#e52e00", glow:"#ffd27a",
+  goku:    {name:"Sangoku",  emoji:"🥋", img:"img/goku.png",    c1:"#ff8a00", c2:"#e52e00", glow:"#ffd27a",
             tag:"Le Saiyan au cœur pur",
             desc:"Cœur pur, appétit sans fin et soif de dépassement. Tu vis pour les défis et tu tires le meilleur des autres."},
-  vegeta:  {name:"Végéta",   emoji:"👑", c1:"#3d8bff", c2:"#0a2a5e", glow:"#9cc6ff",
+  vegeta:  {name:"Végéta",   emoji:"👑", img:"img/vegeta.png",  c1:"#3d8bff", c2:"#0a2a5e", glow:"#9cc6ff",
             tag:"Le prince des Saiyans",
             desc:"Fier, intense et incroyablement déterminé. Derrière l'orgueil se cache une loyauté sans faille."},
-  gohan:   {name:"Sangohan", emoji:"🎓", c1:"#8a5bff", c2:"#2e1a66", glow:"#cdb6ff",
+  gohan:   {name:"Sangohan", emoji:"🎓", img:"img/gohan.png",   c1:"#8a5bff", c2:"#2e1a66", glow:"#cdb6ff",
             tag:"La puissance tranquille",
             desc:"Doux mais d'une puissance insoupçonnée. Tu protèges ceux que tu aimes et tu brilles quand ça compte vraiment."},
-  piccolo: {name:"Piccolo",  emoji:"🧘", c1:"#2fcf7a", c2:"#0f5c33", glow:"#aef0cb",
+  piccolo: {name:"Piccolo",  emoji:"🧘", img:"img/piccolo.png", c1:"#2fcf7a", c2:"#0f5c33", glow:"#aef0cb",
             tag:"Le mentor Namek",
             desc:"Stratège, sage et solitaire. Tu observes, tu réfléchis, puis tu frappes au moment parfait."},
-  bulma:   {name:"Bulma",    emoji:"🔧", c1:"#00bcd4", c2:"#c4187e", glow:"#a9f0ff",
+  bulma:   {name:"Bulma",    emoji:"🔧", img:"img/bulma.png",   c1:"#00bcd4", c2:"#c4187e", glow:"#a9f0ff",
             tag:"Le génie de l'équipe",
             desc:"Géniale, débrouillarde et au caractère bien trempé. Sans toi, l'équipe serait totalement perdue."},
-  krillin: {name:"Krilin",   emoji:"✊", c1:"#ffb300", c2:"#ef6c00", glow:"#ffe39a",
+  krillin: {name:"Krilin",   emoji:"✊", img:"img/krillin.png", c1:"#ffb300", c2:"#ef6c00", glow:"#ffe39a",
             tag:"Le cœur courageux",
             desc:"Courageux, fidèle et plus fort qu'il n'y paraît. Le meilleur ami dont on puisse rêver."},
-  freezer: {name:"Freezer",  emoji:"❄️", c1:"#b14cff", c2:"#241158", glow:"#e0c2ff",
+  freezer: {name:"Freezer",  emoji:"❄️", img:"img/freezer.png", c1:"#b14cff", c2:"#241158", glow:"#e0c2ff",
             tag:"L'empereur du cosmos",
             desc:"Ambitieux, charismatique et redoutable. Tu vises le sommet… quoi qu'il en coûte."},
 };
+
+/* Préchargement des portraits (même origine → l'export canvas reste valide).
+   Si un fichier manque, on retombe proprement sur l'emoji du personnage. */
+const _imgCache = {};
+function getImg(src){
+  if(!_imgCache[src]){
+    _imgCache[src] = new Promise(res=>{
+      const im = new Image();
+      im.onload  = ()=>res(im);
+      im.onerror = ()=>res(null);
+      im.src = src;
+    });
+  }
+  return _imgCache[src];
+}
+function coverDraw(ctx,img,x,y,w,h){   // dessine l'image en mode "cover" (remplit, recadre)
+  const ir = img.width/img.height, br = w/h;
+  let sw,sh,sx,sy;
+  if(ir > br){ sh = img.height; sw = sh*br; sx = (img.width-sw)/2; sy = 0; }
+  else       { sw = img.width;  sh = sw/br; sx = 0; sy = (img.height-sh)/2; }
+  ctx.drawImage(img, sx,sy,sw,sh, x,y,w,h);
+}
+for(const k in CHARACTERS) getImg(CHARACTERS[k].img);  // on précharge dès le départ
 
 const QUESTIONS = [
   {q:"C'est le week-end. Ton plan idéal ?", a:[
@@ -333,7 +356,7 @@ function choose(opt){
   }
 }
 
-function computeResult(){
+async function computeResult(){
   let best = PRIORITY[0], max = -1;
   for(const k of PRIORITY){
     if(scores[k] > max){ max = scores[k]; best = k; }
@@ -350,7 +373,7 @@ function computeResult(){
   const total = PRIORITY.reduce((a,k)=>a+scores[k],0);
   const power = 9000 + max*1500 + total*180;
 
-  drawCard(c, power);   // remplit le canvas + l'aperçu + prépare le fichier à partager
+  await drawCard(c, power);   // remplit le canvas + l'aperçu + prépare le fichier à partager
   show("screen-result");
   mountSnapButton();
 }
@@ -358,7 +381,7 @@ function computeResult(){
 /* =========================================================================
    🎨  GÉNÉRATION DE LA CARTE-RÉSULTAT (image partageable, format story 9:16)
    ========================================================================= */
-function drawCard(c, power){
+async function drawCard(c, power){
   const cv = $("cardCanvas");
   const ctx = cv.getContext("2d");
   const W = cv.width, H = cv.height, cx = W/2;
@@ -385,15 +408,24 @@ function drawCard(c, power){
   ctx.font = "bold 40px 'Trebuchet MS', sans-serif";
   ctx.fillText("QUEL PERSONNAGE DRAGON BALL ES-TU ?", cx, 170);
 
-  // cercle emoji
-  ctx.beginPath(); ctx.arc(cx, 600, 230, 0, Math.PI*2);
-  ctx.fillStyle = "rgba(255,255,255,.14)";
-  ctx.fill();
+  // portrait du personnage dans un cercle (repli sur l'emoji si l'image manque)
+  const R = 230, cyImg = 600;
+  ctx.save();
+  ctx.beginPath(); ctx.arc(cx, cyImg, R, 0, Math.PI*2); ctx.closePath();
+  ctx.fillStyle = "rgba(255,255,255,.14)"; ctx.fill();
+  ctx.clip();
+  const charImg = await getImg(c.img);
+  if(charImg){
+    coverDraw(ctx, charImg, cx-R, cyImg-R, R*2, R*2);
+  } else {
+    ctx.font = "270px 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif";
+    ctx.textBaseline = "middle"; ctx.fillStyle = "#fff";
+    ctx.fillText(c.emoji, cx, cyImg+15);
+    ctx.textBaseline = "alphabetic";
+  }
+  ctx.restore();
+  ctx.beginPath(); ctx.arc(cx, cyImg, R, 0, Math.PI*2);   // anneau par-dessus
   ctx.lineWidth = 10; ctx.strokeStyle = hexA("#ffffff",.7); ctx.stroke();
-  ctx.font = "270px 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif";
-  ctx.textBaseline = "middle";
-  ctx.fillText(c.emoji, cx, 615);
-  ctx.textBaseline = "alphabetic";
 
   // "TU ES"
   ctx.fillStyle = hexA("#ffffff",.85);
